@@ -1,16 +1,31 @@
 #!/bin/bash 
 
-read -p "What is your first name?: " user_name  #prompts the user for their name
-dir_name="submission_reminder_${user_name}"
-mkdir -p  submission_reminder_$user_name
-echo "$user_name, your app environment is created"
+#prompt the user for their name and ensure they enter valid input
+while true; do
+	read -p "What is your first name?: " user_name
+	echo "username is $user_name"
+	if [[ -n "$user_name" && "$user_name" =~ ^[a-zA-Z]+$ ]]; then
+		break
+	else
+		echo "Please input one valid name using alphabetical characters without any spaces"
+	fi
+done 
 
+#set directory path
+dir_name="submission_reminder_${user_name}"
+
+#creation of parent directory
+mkdir -p  submission_reminder_$user_name
+
+echo "$user_name, your app environment has been set up."
+echo "Start the app by running 'bash  submission_reminder_{your username}/startup.sh'"
+echo "In case you want to change the assignment name please run 'bash copilot_shell_script.sh'"
+
+#creation of lists to store names of files and directories
 sub_dir=("app" "modules" "assets" "config") #lists do not require , 
 file_name=("reminder.sh" "functions.sh" "submissions.txt" "config.env")
 
 #I am using for loops for a cleaner and more dynamic code
-#since I've got two lists I will use indexes instead of string variable names in my for loop
-
 for i in "${!sub_dir[@]}"  
 do
 	mkdir -p submission_reminder_$user_name/${sub_dir[$i]}
@@ -23,17 +38,18 @@ do
 
 done
 
+#Population of files
 cat > "submission_reminder_$user_name/assets/submissions.txt" << EOL
-student, assignment, submission status
-Chinemerem, Shell Navigation, not submitted
-Chiagoziem, Git, submitted
-Divine, Shell Navigation, not submitted
-Anissa, Shell Basics, submitted
-Dean, Shell Navigation, not submitted
-Ati, Git, not submitted
-Joy, Shell Basics,not submitted
-Lin, Git, submitted
-Hope, Shell Navigation, submitted
+student,assignment, submission status
+Chinemerem,Shell Navigation, not submitted
+Chiagoziem,Git, submitted
+Divine,Shell Navigation, not submitted
+Anissa,Shell Basics, submitted
+Dean,Shell Navigation, not submitted
+Ati,Git, not submitted
+Joy,Shell Basics,not submitted
+Lin,Git, submitted
+Hope,Shell Navigation, submitted
 EOL
 
 
@@ -67,16 +83,11 @@ EOL
 cat > "submission_reminder_$user_name/app/reminder.sh" << EOL
 #!/bin/bash
 
+#setting up the directory paths
 resolved_path="\$(readlink -f "\${BASH_SOURCE[0]}")"
-echo "Resolved path: \$resolved_path"
-
 script_dir="\$(dirname "\$resolved_path")"
-echo "Script directory : \$script_dir" 
-
 #Go up one level to base folder
 base_dir="\$(dirname "\$script_dir")"
-
-echo "file \$base_dir"
 
 # Source environment variables and helper functions
 source "submission_reminder_$user_name/config/config.env"
